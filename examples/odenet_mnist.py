@@ -35,6 +35,8 @@ parser.add_argument('--weight-decay', '--wd', default=5e-4, type=float,
 parser.add_argument('--ortho-decay', '--od', default=1e-2, type=float,
                     help = 'ortho weight decay')
 parser.add_argument('--nesterov', default=True, type=bool, help='nesterov momentum')
+parser.add_argument('--weight-decay', '--wd', default=5e-4, type=float,
+                    help='weight decay (default: 5e-4)')
 
 args = parser.parse_args()
 
