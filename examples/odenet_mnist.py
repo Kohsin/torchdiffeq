@@ -30,9 +30,9 @@ parser.add_argument('--save', type=str, default='./experiment1')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--gpu', type=int, default=0)
 
-parser.add_argument('--weight-decay', default=5e-4, type=float,
+parser.add_argument('--weight_decay','--wd', default=5e-4, type=float,
                     help='weight decay (default: 5e-4)')
-parser.add_argument('--ortho-decay', '--od', default=1e-2, type=float,
+parser.add_argument('--ortho_decay', '--od', default=1e-2, type=float,
                     help = 'ortho weight decay')
 parser.add_argument('--nesterov', default=True, type=bool, help='nesterov momentum')
 
