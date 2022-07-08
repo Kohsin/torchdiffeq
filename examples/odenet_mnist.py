@@ -43,7 +43,32 @@ if args.adjoint:
 else:
     from torchdiffeq import odeint
 
+def adjust_weight_decay_rate(optimizer, epoch):
+    w_d = args.weight_decay
 
+    if epoch > 20:
+        w_d = 5e-4
+    elif epoch > 10:
+        w_d = 1e-6
+
+    for param_group in optimizer.param_groups:
+        param_group['weight_decay'] = w_d
+
+def adjust_ortho_decay_rate(epoch):
+    o_d = args.ortho_decay
+
+    if epoch > 120:
+       o_d = 0.0
+    elif epoch > 70:
+       o_d = 1e-6 * o_d
+    elif epoch > 50:
+       o_d = 1e-4 * o_d
+    elif epoch > 20:
+       o_d = 1e-3 * o_d
+
+    return o_d
+    
+    
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
