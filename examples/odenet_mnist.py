@@ -411,7 +411,7 @@ if __name__ == '__main__':
 
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
-        odecay = adjust_ortho_decay_rate(epoch+1)
+        odecay = adjust_ortho_decay_rate(itr+1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
         x = x.to(device)
