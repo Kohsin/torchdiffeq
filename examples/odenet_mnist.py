@@ -373,7 +373,7 @@ if __name__ == '__main__':
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,
                                 nesterov = args.nesterov, 
-                                weight_decay=args.weight_deca )
+                                weight_decay=args.weight_decay )
 
     best_acc = 0
     batch_time_meter = RunningAverageMeter()
