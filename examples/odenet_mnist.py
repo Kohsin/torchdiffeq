@@ -9,6 +9,12 @@ from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
+from torch.autograd import Variable
+from torch.nn.functional import normalize
+import torch.nn.functional as F
+import torch.nn.parallel
+import torch.backends.cudnn as cudnn
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default='odenet')
 parser.add_argument('--tol', type=float, default=1e-3)
@@ -23,6 +29,13 @@ parser.add_argument('--test_batch_size', type=int, default=1000)
 parser.add_argument('--save', type=str, default='./experiment1')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--gpu', type=int, default=0)
+
+parser.add_argument('--weight-decay', '--wd', default=5e-4, type=float,
+                    help='weight decay (default: 5e-4)')
+parser.add_argument('--ortho-decay', '--od', default=1e-2, type=float,
+                    help = 'ortho weight decay')
+parser.add_argument('--nesterov', default=True, type=bool, help='nesterov momentum')
+
 args = parser.parse_args()
 
 if args.adjoint:
@@ -43,6 +56,41 @@ def conv1x1(in_planes, out_planes, stride=1):
 
 def norm(dim):
     return nn.GroupNorm(min(32, dim), dim)
+
+
+def l2_reg_ortho(mdl):
+        l2_reg = None
+        for W in mdl.parameters():
+                if W.ndimension() < 2:
+                        continue
+                else:
+                        cols = W[0].numel()
+                        rows = W.shape[0]
+                        w1 = W.view(-1,cols)
+                        wt = torch.transpose(w1,0,1)
+                        if (rows > cols):
+                                m  = torch.matmul(wt,w1)
+                                ident = Variable(torch.eye(cols,cols),requires_grad=True)
+                        else:
+                                m = torch.matmul(w1,wt)
+                                ident = Variable(torch.eye(rows,rows), requires_grad=True)
+
+                        ident = ident.cuda()
+                        w_tmp = (m - ident)
+                        b_k = Variable(torch.rand(w_tmp.shape[1],1))
+                        b_k = b_k.cuda()
+
+                        v1 = torch.matmul(w_tmp, b_k)
+                        norm1 = torch.norm(v1,2)
+                        v2 = torch.div(v1,norm1)
+                        v3 = torch.matmul(w_tmp,v2)
+
+                        if l2_reg is None:
+                                l2_reg = (torch.norm(v3,2))**2
+                        else:
+                                l2_reg = l2_reg + (torch.norm(v3,2))**2
+        return l2_reg
+
 
 
 class ResBlock(nn.Module):
@@ -323,26 +371,32 @@ if __name__ == '__main__':
         decay_rates=[1, 0.1, 0.01, 0.001]
     )
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,
+                                nesterov = args.nesterov, 
+                                weight_decay=args.weight_deca )
 
     best_acc = 0
     batch_time_meter = RunningAverageMeter()
     f_nfe_meter = RunningAverageMeter()
     b_nfe_meter = RunningAverageMeter()
     end = time.time()
-
+    ortho_decay = args.ortho_decay
+    weight_decay = args.weight_decay
     for itr in range(args.nepochs * batches_per_epoch):
 
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
-
+        odecay = adjust_ortho_decay_rate(epoch+1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
         loss = criterion(logits, y)
-
+        oloss =  l2_reg_ortho(model)
+        oloss =  odecay * oloss
+        loss = criterion(output, y)
+        loss = loss + oloss
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
             feature_layers[0].nfe = 0
