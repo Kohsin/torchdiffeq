@@ -171,7 +171,7 @@ class ODEfunc(nn.Module):
         self.norm1 = norm(dim)
         self.relu = nn.ReLU(inplace=True)
         self.conv1 = ConcatConv2d(dim, dim, 3, 1, 1)
-        self.norm2 = norm(dim, name = 'test')
+        self.norm2 = norm(dim)
         self.conv2 = ConcatConv2d(dim, dim, 3, 1, 1)
         self.norm3 = norm(dim)
         self.nfe = 0
@@ -380,7 +380,10 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
-
+    parm={}
+    for name,parameters in resnet18.named_parameters():
+        print(name,':',parameters.size())
+        parm[name]=parameters.detach().numpy()
     logger.info(model)
     logger.info('Number of parameters: {}'.format(count_parameters(model)))
 
@@ -457,3 +460,4 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
+                
