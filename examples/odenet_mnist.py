@@ -382,7 +382,7 @@ if __name__ == '__main__':
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     parm={}
     for name,parameters in model.named_parameters():
-        if name == '7.odefunc.conv1._layer.weight'
+        if name == '7.odefunc.conv1._layer.weight':
             print(name,':',parameters.size())
         #parm[name]=parameters.detach().numpy()
     logger.info(model)
