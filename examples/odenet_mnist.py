@@ -118,6 +118,8 @@ def l2_reg_ortho(mdl):
 
 
 
+        
+
 class ResBlock(nn.Module):
     expansion = 1
 
@@ -169,7 +171,7 @@ class ODEfunc(nn.Module):
         self.norm1 = norm(dim)
         self.relu = nn.ReLU(inplace=True)
         self.conv1 = ConcatConv2d(dim, dim, 3, 1, 1)
-        self.norm2 = norm(dim)
+        self.norm2 = norm(dim, name = 'test')
         self.conv2 = ConcatConv2d(dim, dim, 3, 1, 1)
         self.norm3 = norm(dim)
         self.nfe = 0
@@ -428,6 +430,8 @@ if __name__ == '__main__':
 
         loss.backward()
         optimizer.step()
+        
+        
 
         if is_odenet:
             nfe_backward = feature_layers[0].nfe
