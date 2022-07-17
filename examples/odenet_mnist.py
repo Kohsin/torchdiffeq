@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     parm={}
-    for name,parameters in resnet18.named_parameters():
+    for name,parameters in model.named_parameters():
         print(name,':',parameters.size())
         parm[name]=parameters.detach().numpy()
     logger.info(model)
