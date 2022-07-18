@@ -453,8 +453,8 @@ if __name__ == '__main__':
             with torch.no_grad():
                 for name, param in model.named_parameters():
                     if name == '7.odefunc.conv1._layer.weight':
-                        sv.append(svd(param[1].detach().cpu().numpy(), compute_uv=False))
-                        print('sv:', svd(param[1].detach().cpu().numpy(), compute_uv=False))
+                        sv.append(svd(param.detach().cpu().numpy(), compute_uv=False))
+                        print('sv:', svd(param.detach().cpu().numpy(), compute_uv=False))
                 train_acc = accuracy(model, train_eval_loader)
                 val_acc = accuracy(model, test_loader)
                 if val_acc > best_acc:
