@@ -415,8 +415,10 @@ if __name__ == '__main__':
     end = time.time()
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
+    sv = []
+    print("batches_per_epoch: " , batches_per_epoch)
     for itr in range(args.nepochs * batches_per_epoch):
-
+      
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
         odecay = adjust_ortho_decay_rate(itr + 1)
