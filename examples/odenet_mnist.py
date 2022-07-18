@@ -87,11 +87,11 @@ def norm(dim):
 
 def l2_reg_ortho(mdl):
     l2_reg = None
-    for name, W in mdl.parameters():
+    for W in mdl.parameters(), name in mdl.named_parameters():
         if W.ndimension() < 2:
             continue
         else:
-            if name[0] == 7:
+            if name[0] == '7':
                 cols = W[0].numel()
                 rows = W.shape[0]
                 w1 = W.view(-1, cols)
