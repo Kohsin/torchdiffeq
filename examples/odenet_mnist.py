@@ -382,7 +382,7 @@ if __name__ == '__main__':
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     parm = {}
     for name, parameters in model.named_parameters():
-        if name[0] == '7' and name[-1] = 't':
+        if name[0] == '7' and name[-1] == 't':
             print(name, ':', parameters.size())
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
