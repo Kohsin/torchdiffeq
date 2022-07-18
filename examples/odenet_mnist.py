@@ -451,6 +451,9 @@ if __name__ == '__main__':
 
         if itr % batches_per_epoch == 0:
             with torch.no_grad():
+                for name, param in model.named_parameters():
+                    if name == '7.odefunc.conv1._layer.weight':
+                        sv.append(svd(param), compute_uv=False)
                 train_acc = accuracy(model, train_eval_loader)
                 val_acc = accuracy(model, test_loader)
                 if val_acc > best_acc:
@@ -463,3 +466,5 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
+                
+       
