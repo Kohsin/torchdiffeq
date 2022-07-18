@@ -87,36 +87,38 @@ def norm(dim):
 
 def l2_reg_ortho(mdl):
     l2_reg = None
-    for W in mdl.parameters():
-        if W.ndimension() < 2:
-            continue
-        else:
-            #if name[0] == '7':
-            cols = W[0].numel()
-            rows = W.shape[0]
-            w1 = W.view(-1, cols)
-            wt = torch.transpose(w1, 0, 1)
-            if (rows > cols):
-                m = torch.matmul(wt, w1)
-                ident = Variable(torch.eye(cols, cols), requires_grad=True)
+    #for W in mdl.nparameters():
+    for name, W in mdl.nparameters():
+        if name[0] == '7' and name[-1] == 't':
+            if W.ndimension() < 2:
+                continue
             else:
-                m = torch.matmul(w1, wt)
-                ident = Variable(torch.eye(rows, rows), requires_grad=True)
-
-            ident = ident.cuda()
-            w_tmp = (m - ident)
-            b_k = Variable(torch.rand(w_tmp.shape[1], 1))
-            b_k = b_k.cuda()
-
-            v1 = torch.matmul(w_tmp, b_k)
-            norm1 = torch.norm(v1, 2)
-            v2 = torch.div(v1, norm1)
-            v3 = torch.matmul(w_tmp, v2)
-
-            if l2_reg is None:
-                l2_reg = (torch.norm(v3, 2)) ** 2
-            else:
-                l2_reg = l2_reg + (torch.norm(v3, 2)) ** 2
+                #if name[0] == '7':
+                cols = W[0].numel()
+                rows = W.shape[0]
+                w1 = W.view(-1, cols)
+                wt = torch.transpose(w1, 0, 1)
+                if (rows > cols):
+                    m = torch.matmul(wt, w1)
+                    ident = Variable(torch.eye(cols, cols), requires_grad=True)
+                else:
+                    m = torch.matmul(w1, wt)
+                    ident = Variable(torch.eye(rows, rows), requires_grad=True)
+    
+                ident = ident.cuda()
+                w_tmp = (m - ident)
+                b_k = Variable(torch.rand(w_tmp.shape[1], 1))
+                b_k = b_k.cuda()
+    
+                v1 = torch.matmul(w_tmp, b_k)
+                norm1 = torch.norm(v1, 2)
+                v2 = torch.div(v1, norm1)
+                v3 = torch.matmul(w_tmp, v2)
+    
+                if l2_reg is None:
+                    l2_reg = (torch.norm(v3, 2)) ** 2
+                else:
+                    l2_reg = l2_reg + (torch.norm(v3, 2)) ** 2
     return l2_reg
 
 
@@ -382,7 +384,7 @@ if __name__ == '__main__':
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     parm = {}
     for name, parameters in model.named_parameters():
-        if name[0] == '7' and name[-1] == 't':
+        if name == '7.odefunc.conv1._layer.weight':
             print(name, ':', parameters.size())
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
