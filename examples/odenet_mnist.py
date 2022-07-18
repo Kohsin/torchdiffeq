@@ -455,9 +455,8 @@ if __name__ == '__main__':
                     if name == '7.odefunc.conv1._layer.weight':
                         svs = svd(param.detach().cpu().numpy(), compute_uv=False)
                         sv.append(svs)
-                        test = svs.numpy()
                         print('7.odefunc.conv1._layer.weight:',param.size())
-                        print('sv:', test.shape())
+                        print('sv:', test.shape)
                 train_acc = accuracy(model, train_eval_loader)
                 val_acc = accuracy(model, test_loader)
                 if val_acc > best_acc:
