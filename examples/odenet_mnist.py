@@ -30,10 +30,10 @@ parser.add_argument('--save', type=str, default='./experiment1')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--gpu', type=int, default=0)
 
-parser.add_argument('--weight_decay','--wd', default=5e-4, type=float,
+parser.add_argument('--weight_decay', '--wd', default=5e-4, type=float,
                     help='weight decay (default: 5e-4)')
 parser.add_argument('--ortho_decay', '--od', default=1e-2, type=float,
-                    help = 'ortho weight decay')
+                    help='ortho weight decay')
 parser.add_argument('--nesterov', default=True, type=bool, help='nesterov momentum')
 
 args = parser.parse_args()
@@ -42,6 +42,7 @@ if args.adjoint:
     from torchdiffeq import odeint_adjoint as odeint
 else:
     from torchdiffeq import odeint
+
 
 def adjust_weight_decay_rate(optimizer, epoch):
     w_d = args.weight_decay
@@ -54,21 +55,22 @@ def adjust_weight_decay_rate(optimizer, epoch):
     for param_group in optimizer.param_groups:
         param_group['weight_decay'] = w_d
 
+
 def adjust_ortho_decay_rate(epoch):
     o_d = args.ortho_decay
 
     if epoch > 120:
-       o_d = 0.0
+        o_d = 0.0
     elif epoch > 70:
-       o_d = 1e-6 * o_d
+        o_d = 1e-6 * o_d
     elif epoch > 50:
-       o_d = 1e-4 * o_d
+        o_d = 1e-4 * o_d
     elif epoch > 20:
-       o_d = 1e-3 * o_d
+        o_d = 1e-3 * o_d
 
     return o_d
-    
-    
+
+
 def conv3x3(in_planes, out_planes, stride=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=False)
@@ -84,41 +86,39 @@ def norm(dim):
 
 
 def l2_reg_ortho(mdl):
-        l2_reg = None
-        for W in mdl.parameters():
-                if W.ndimension() < 2:
-                        continue
+    l2_reg = None
+    for name, W in mdl.parameters():
+        if W.ndimension() < 2:
+            continue
+        else:
+            if name[0] == 7:
+                cols = W[0].numel()
+                rows = W.shape[0]
+                w1 = W.view(-1, cols)
+                wt = torch.transpose(w1, 0, 1)
+                if (rows > cols):
+                    m = torch.matmul(wt, w1)
+                    ident = Variable(torch.eye(cols, cols), requires_grad=True)
                 else:
-                        cols = W[0].numel()
-                        rows = W.shape[0]
-                        w1 = W.view(-1,cols)
-                        wt = torch.transpose(w1,0,1)
-                        if (rows > cols):
-                                m  = torch.matmul(wt,w1)
-                                ident = Variable(torch.eye(cols,cols),requires_grad=True)
-                        else:
-                                m = torch.matmul(w1,wt)
-                                ident = Variable(torch.eye(rows,rows), requires_grad=True)
+                    m = torch.matmul(w1, wt)
+                    ident = Variable(torch.eye(rows, rows), requires_grad=True)
 
-                        ident = ident.cuda()
-                        w_tmp = (m - ident)
-                        b_k = Variable(torch.rand(w_tmp.shape[1],1))
-                        b_k = b_k.cuda()
+                ident = ident.cuda()
+                w_tmp = (m - ident)
+                b_k = Variable(torch.rand(w_tmp.shape[1], 1))
+                b_k = b_k.cuda()
 
-                        v1 = torch.matmul(w_tmp, b_k)
-                        norm1 = torch.norm(v1,2)
-                        v2 = torch.div(v1,norm1)
-                        v3 = torch.matmul(w_tmp,v2)
+                v1 = torch.matmul(w_tmp, b_k)
+                norm1 = torch.norm(v1, 2)
+                v2 = torch.div(v1, norm1)
+                v3 = torch.matmul(w_tmp, v2)
 
-                        if l2_reg is None:
-                                l2_reg = (torch.norm(v3,2))**2
-                        else:
-                                l2_reg = l2_reg + (torch.norm(v3,2))**2
-        return l2_reg
+                if l2_reg is None:
+                    l2_reg = (torch.norm(v3, 2)) ** 2
+                else:
+                    l2_reg = l2_reg + (torch.norm(v3, 2)) ** 2
+    return l2_reg
 
-
-
-        
 
 class ResBlock(nn.Module):
     expansion = 1
@@ -380,11 +380,11 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
-    parm={}
-    for name,parameters in model.named_parameters():
+    parm = {}
+    for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
-            print(name,':',parameters.size())
-        #parm[name]=parameters.detach().numpy()
+            print(name, ':', parameters.size())
+        # parm[name]=parameters.detach().numpy()
     logger.info(model)
     logger.info('Number of parameters: {}'.format(count_parameters(model)))
 
@@ -403,8 +403,8 @@ if __name__ == '__main__':
     )
 
     optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9,
-                                nesterov = args.nesterov, 
-                                weight_decay=args.weight_decay )
+                                nesterov=args.nesterov,
+                                weight_decay=args.weight_decay)
 
     best_acc = 0
     batch_time_meter = RunningAverageMeter()
@@ -417,15 +417,15 @@ if __name__ == '__main__':
 
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
-        odecay = adjust_ortho_decay_rate(itr+1)
+        odecay = adjust_ortho_decay_rate(itr + 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
-        #loss = criterion(logits, y)
-        oloss =  l2_reg_ortho(model)
-        oloss =  odecay * oloss
+        # loss = criterion(logits, y)
+        oloss = l2_reg_ortho(model)
+        oloss = odecay * oloss
         loss = criterion(logits, y)
         loss = loss + oloss
         if is_odenet:
@@ -434,8 +434,6 @@ if __name__ == '__main__':
 
         loss.backward()
         optimizer.step()
-        
-        
 
         if is_odenet:
             nfe_backward = feature_layers[0].nfe
@@ -461,4 +459,3 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-                
