@@ -8,7 +8,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
-
+from numpy.linalg import svd
 from torch.autograd import Variable
 from torch.nn.functional import normalize
 import torch.nn.functional as F
@@ -87,13 +87,13 @@ def norm(dim):
 
 def l2_reg_ortho(mdl):
     l2_reg = None
-    #for W in mdl.nparameters():
+    # for W in mdl.nparameters():
     for name, W in mdl.named_parameters():
         if name[0] == '7' and name[-1] == 't':
             if W.ndimension() < 2:
                 continue
             else:
-                #if name[0] == '7':
+                # if name[0] == '7':
                 cols = W[0].numel()
                 rows = W.shape[0]
                 w1 = W.view(-1, cols)
@@ -104,17 +104,17 @@ def l2_reg_ortho(mdl):
                 else:
                     m = torch.matmul(w1, wt)
                     ident = Variable(torch.eye(rows, rows), requires_grad=True)
-    
+
                 ident = ident.cuda()
                 w_tmp = (m - ident)
                 b_k = Variable(torch.rand(w_tmp.shape[1], 1))
                 b_k = b_k.cuda()
-    
+
                 v1 = torch.matmul(w_tmp, b_k)
                 norm1 = torch.norm(v1, 2)
                 v2 = torch.div(v1, norm1)
                 v3 = torch.matmul(w_tmp, v2)
-    
+
                 if l2_reg is None:
                     l2_reg = (torch.norm(v3, 2)) ** 2
                 else:
@@ -416,9 +416,9 @@ if __name__ == '__main__':
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
     sv = []
-    print("batches_per_epoch: " , batches_per_epoch)
+    print("batches_per_epoch: ", batches_per_epoch)
     for itr in range(args.nepochs * batches_per_epoch):
-      
+
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
         odecay = adjust_ortho_decay_rate(itr + 1)
@@ -466,5 +466,5 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-                
-       
+
+    print('sv:', sv.shape())
