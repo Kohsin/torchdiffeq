@@ -58,7 +58,7 @@ def hook(module, fea_in, fea_out):
 
 def jacobian_temp(inputs, outputs):
     inputs = Variable(inputs).to(device).requires_grad_()
-    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
+    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True, allow_unused=True)[0] for i in
                         range(outputs.size(1))], dim=-1)
 
 
@@ -450,7 +450,7 @@ if __name__ == '__main__':
         y = y.to(device)
         logits = model(x)
         Jy = logits
-        J.append(jacobian(Jx, Jy))
+        J.append(jacobian_temp(Jx, Jy))
         sv.append(svd(J[-1], compute_uv=False))
         print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
