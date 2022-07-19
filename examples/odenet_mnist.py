@@ -445,10 +445,12 @@ if __name__ == '__main__':
         odecay = adjust_ortho_decay_rate(itr + 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
+        Jx = x
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
-        J.append(jacobian(x, logits))
+        Jy = logits
+        J.append(jacobian(Jx, Jy))
         sv.append(svd(J[-1], compute_uv=False))
         print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
