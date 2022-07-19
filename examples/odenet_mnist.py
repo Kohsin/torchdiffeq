@@ -429,7 +429,7 @@ if __name__ == '__main__':
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
     sv = []
-    net = ODEBlock()
+    #net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
     for itr in range(args.nepochs * batches_per_epoch):
 
