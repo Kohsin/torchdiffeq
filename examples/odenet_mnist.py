@@ -449,7 +449,7 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
-        Jy = logits.
+        Jy = logits
         J.append(jacobian(Jx, Jy, allow_unused=False))
         sv.append(svd(J[-1], compute_uv=False))
         print('sv.len: ',len(sv))
