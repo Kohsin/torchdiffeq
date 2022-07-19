@@ -450,7 +450,7 @@ if __name__ == '__main__':
         y = y.to(device)
         logits = model(x)
         Jy = logits
-        J.append(jacobian(Jx, Jy))
+        J.append(jacobian(Jx, Jy, allow_unused=False))
         sv.append(svd(J[-1], compute_uv=False))
         print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
