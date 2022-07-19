@@ -10,6 +10,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from numpy.linalg import svd
 from torch.autograd import Variable
+from torch.autograd.functional import _autograd_grad
 from torch.nn.functional import normalize
 import torch.nn.functional as F
 import torch.nn.parallel
@@ -42,6 +43,10 @@ if args.adjoint:
     from torchdiffeq import odeint_adjoint as odeint
 else:
     from torchdiffeq import odeint
+
+
+def jacobian(inputs, outputs):
+    return torch.stack([_autograd_grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in range(outputs.size(1))], dim=-1)
 
 
 def adjust_weight_decay_rate(optimizer, epoch):
@@ -382,7 +387,6 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
-    print('model len',len(model))
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
@@ -451,13 +455,16 @@ if __name__ == '__main__':
         end = time.time()
 
         if itr % batches_per_epoch == 0:
+            jaco = jacobian(x, logits)
+            sv.append(svd(jaco.numpy(), compute_uv=False))
+            logger.info('sv.len{:04d}'.format(len(sv)))
             with torch.no_grad():
+                '''
                 for name, param in model.named_parameters():
                     if name == '7.odefunc.conv1._layer.weight':
-                        svs = svd(param.detach().cpu().numpy(), compute_uv=False)
-                        sv.append(svs)
-                        print('7.odefunc.conv1._layer.weight:',param.size())
-                        print('sv:', svs.shape)
+                        sv.append(svd(param[1].detach().cpu().numpy(), compute_uv=False))
+                        print('sv:', len(sv))
+                '''
                 train_acc = accuracy(model, train_eval_loader)
                 val_acc = accuracy(model, test_loader)
                 if val_acc > best_acc:
@@ -471,4 +478,3 @@ if __name__ == '__main__':
                     )
                 )
 
-    
