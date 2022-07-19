@@ -2,6 +2,8 @@ import os
 import argparse
 import logging
 import time
+
+import numpy
 import numpy as np
 import torch
 import torch.nn as nn
@@ -49,8 +51,8 @@ features_out_hook = []
 
 
 def hook(module, fea_in, fea_out):
-    features_in_hook.append(fea_in)
-    features_out_hook.append(fea_out)
+    features_in_hook.append(numpy.array(fea_in))
+    features_out_hook.append(numpy.array(fea_out))
     return None
 
 
