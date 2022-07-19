@@ -51,8 +51,8 @@ features_out_hook = []
 
 
 def hook(module, fea_in, fea_out):
-    features_in_hook.append(numpy.array(fea_in))
-    features_out_hook.append(numpy.array(fea_out))
+    features_in_hook.append(fea_in)
+    features_out_hook.append(fea_out)
     return None
 
 
@@ -447,6 +447,7 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
+        print('logits.shape',logits.shape)
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
