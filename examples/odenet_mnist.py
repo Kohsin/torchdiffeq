@@ -12,7 +12,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from numpy.linalg import svd
 from torch.autograd import Variable, grad
-from torch.autograd.functional import _autograd_grad
+from torch.autograd.functional import jacobian
 from torch.nn.functional import normalize
 import torch.nn.functional as F
 import torch.nn.parallel
@@ -434,6 +434,7 @@ if __name__ == '__main__':
     end = time.time()
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
+    J = []
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
@@ -447,7 +448,9 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
-        print('logits.shape',logits.shape)
+        J.append(jacobian(x, logits))
+        sv.append(svd(J[-1], compute_uv=False))
+        print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
