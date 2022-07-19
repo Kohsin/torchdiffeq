@@ -445,7 +445,8 @@ if __name__ == '__main__':
         odecay = adjust_ortho_decay_rate(itr + 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
-        Jx = torch.tensor(x)
+        Jx = x
+        print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
