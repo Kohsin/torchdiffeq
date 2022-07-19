@@ -448,15 +448,17 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
-        Jy = logits
-        J = jacobian_temp(Jx, Jy)
-        sv.append(svd(J, compute_uv=False))
-        print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
         loss = criterion(logits, y)
         loss = loss + oloss
+        
+        Jy = logits
+        J = jacobian_temp(Jx, Jy)
+        sv.append(svd(J, compute_uv=False))
+        print('sv.len: ',len(sv))
+        
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
             feature_layers[0].nfe = 0
