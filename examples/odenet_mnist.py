@@ -471,7 +471,8 @@ if __name__ == '__main__':
             for (name, module) in model.named_modules():
                 if name in 'odefunc.':
                     module.register_forward_hook(hook=hook)
-                    print("len for in out", features_in_hook[-1].shape)
+                    if len(features_in_hook) > 0:
+                        print("shape for in", features_in_hook[-1].shape)
             # jaco = jacobian(x, logits)
             # sv.append(svd(jaco.numpy(), compute_uv=False))
             # logger.info('sv.len{:04d}'.format(len(sv)))
