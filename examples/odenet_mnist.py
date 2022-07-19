@@ -399,6 +399,10 @@ if __name__ == '__main__':
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
             print(name, ':', parameters.size())
+    print('model.named_modules: ')
+    for (name, module) in model.named_modules():
+        print(name)
+            
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
     logger.info('Number of parameters: {}'.format(count_parameters(model)))
@@ -464,11 +468,13 @@ if __name__ == '__main__':
         end = time.time()
 
         if itr % batches_per_epoch == 0:
+            '''
             layer_name = 'ODEBlock'
             for (name, module) in model.named_modules():
                 if name in layer_name:
                     module.register_forward_hook(hook=hook)
                     print("len for in out", len(features_in_hook))
+            '''
             #jaco = jacobian(x, logits)
             #sv.append(svd(jaco.numpy(), compute_uv=False))
             #logger.info('sv.len{:04d}'.format(len(sv)))
