@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 from numpy.linalg import svd
-from torch.autograd import Variable
+from torch.autograd import Variable, grad
 from torch.autograd.functional import _autograd_grad
 from torch.nn.functional import normalize
 import torch.nn.functional as F
@@ -46,7 +46,7 @@ else:
 
 
 def jacobian(inputs, outputs):
-    return torch.stack([_autograd_grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in range(outputs.size(1))], dim=-1)
+    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in range(outputs.size(1))], dim=-1)
 
 
 def adjust_weight_decay_rate(optimizer, epoch):
