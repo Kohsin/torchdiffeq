@@ -466,9 +466,9 @@ if __name__ == '__main__':
         if itr % batches_per_epoch == 0:
             layer_name = 'ODEBlock'
             for (name, module) in model.named_modules():
-                if name == layer_name:
+                if name in layer_name:
                     module.register_forward_hook(hook=hook)
-                    print("len for in out", len(features_in_hook)) 
+                    print("len for in out", len(features_in_hook))
             #jaco = jacobian(x, logits)
             #sv.append(svd(jaco.numpy(), compute_uv=False))
             #logger.info('sv.len{:04d}'.format(len(sv)))
