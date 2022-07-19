@@ -434,7 +434,6 @@ if __name__ == '__main__':
     end = time.time()
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
-    J
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
