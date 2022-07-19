@@ -434,7 +434,7 @@ if __name__ == '__main__':
     end = time.time()
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
-    J = []
+    J
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
@@ -450,8 +450,8 @@ if __name__ == '__main__':
         y = y.to(device)
         logits = model(x)
         Jy = logits
-        J.append(jacobian_temp(Jx, Jy))
-        sv.append(svd(J[-1], compute_uv=False))
+        J = jacobian_temp(Jx, Jy)
+        sv.append(svd(J, compute_uv=False))
         print('sv.len: ',len(sv))
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
