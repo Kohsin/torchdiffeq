@@ -47,14 +47,17 @@ else:
 features_in_hook = []
 features_out_hook = []
 
+
 def hook(module, fea_in, fea_out):
     features_in_hook.append(fea_in)
     features_out_hook.append(fea_out)
     return None
 
+
 def jacobian(inputs, outputs):
     inputs = Variable(inputs).to(device).requires_grad_()
-    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in range(outputs.size(1))], dim=-1)
+    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
+                        range(outputs.size(1))], dim=-1)
 
 
 def adjust_weight_decay_rate(optimizer, epoch):
@@ -399,10 +402,11 @@ if __name__ == '__main__':
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
             print(name, ':', parameters.size())
+
     print('model.named_modules: ')
-    for (name, module) in model.named_modules():
-        print(name)
-            
+    for (name1, module) in model.named_modules():
+        print(name1)
+
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
     logger.info('Number of parameters: {}'.format(count_parameters(model)))
@@ -433,7 +437,7 @@ if __name__ == '__main__':
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
     sv = []
-    #net = ODEBlock()
+    # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
     for itr in range(args.nepochs * batches_per_epoch):
 
@@ -475,9 +479,9 @@ if __name__ == '__main__':
                     module.register_forward_hook(hook=hook)
                     print("len for in out", len(features_in_hook))
             '''
-            #jaco = jacobian(x, logits)
-            #sv.append(svd(jaco.numpy(), compute_uv=False))
-            #logger.info('sv.len{:04d}'.format(len(sv)))
+            # jaco = jacobian(x, logits)
+            # sv.append(svd(jaco.numpy(), compute_uv=False))
+            # logger.info('sv.len{:04d}'.format(len(sv)))
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
@@ -497,4 +501,3 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-
