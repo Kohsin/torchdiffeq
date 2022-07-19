@@ -58,8 +58,9 @@ def hook(module, fea_in, fea_out):
 
 def jacobian_temp(inputs, outputs):
     inputs = Variable(inputs).to(device).requires_grad_()
-    return torch.stack([grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True, allow_unused=True)[0] for i in
-                        range(outputs.size(1))], dim=-1)
+    return torch.stack(
+        [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True, allow_unused=True)[0] for i in
+         range(outputs.size(1))], dim=-1)
 
 
 def adjust_weight_decay_rate(optimizer, epoch):
@@ -444,7 +445,7 @@ if __name__ == '__main__':
         odecay = adjust_ortho_decay_rate(itr + 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
-        Jx = x
+        Jx = torch.tensor(x)
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
@@ -453,12 +454,12 @@ if __name__ == '__main__':
         oloss = odecay * oloss
         loss = criterion(logits, y)
         loss = loss + oloss
-        
+
         Jy = logits
         J = jacobian_temp(Jx, Jy)
         sv.append(svd(J, compute_uv=False))
-        print('sv.len: ',len(sv))
-        
+        print('sv.len: ', len(sv))
+
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
             feature_layers[0].nfe = 0
