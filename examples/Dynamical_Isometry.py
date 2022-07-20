@@ -483,7 +483,7 @@ if __name__ == '__main__':
         if len(Jx) > 0 and itr % batches_per_epoch == 0:
             print('Jx.shape',Jx[-1].shape)
             print('Jy.shape',Jy[-1].shape)
-            J = jacobian(lastfunc,Jx[-1])
+            J = jacobian(lastfunc,Jx[-1].to(device))
             sv.append(svd(J, compute_uv=False))
             print('sv.len: ', len(sv))
 
