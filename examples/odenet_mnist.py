@@ -453,10 +453,13 @@ if __name__ == '__main__':
         logits = x
         for i in range(len(model)):
             logits = model[i](logits)
+            print('layar ',i,' :',logits.shape)
+            '''
             if i == 6:
                print("layer 6:",logits.shape)
             if i == 7:
                print("layer 7:",logits.shape)
+            '''
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
