@@ -456,7 +456,7 @@ if __name__ == '__main__':
         for i in range(len(model)):
             logits = model[i](logits)
             #print(itr % batches_per_epoch)
-            if itr % batches_per_epoch == 0 and itr > 0:
+            if itr % batches_per_epoch == 0:
                if i == 6:
                   print('Jx append')
                   Jx.append(logits)
