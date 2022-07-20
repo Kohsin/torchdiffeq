@@ -538,5 +538,5 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-    last_Jx = np.array(Jx.detach().cpu().numpy())
+    last_Jx = np.array(Jx.cpu().numpy())
     np.save('last_Jx.npy',last_Jx) 
