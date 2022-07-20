@@ -402,7 +402,8 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
-    lastfunc = nn.Linear(64, 10)
+    lastfunc = nn.Linear(64, 10).to(device)
+    
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
