@@ -481,7 +481,7 @@ if __name__ == '__main__':
         oloss = odecay * oloss
         loss = criterion(logits, y)
         loss = loss + oloss
-
+        '''
         #Jy = logits
         if len(Jx) > 0 and itr % batches_per_epoch == 0:
             print('Jx.shape',Jx[-1].shape)
@@ -490,7 +490,7 @@ if __name__ == '__main__':
             J = jacobian(lastfunc,Jx[-1])
             sv.append(svd(J.detach().cpu().numpy(), compute_uv=False))
             print('sv.len: ', len(sv))
-            
+        '''
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
             feature_layers[0].nfe = 0
@@ -538,5 +538,5 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-    #last_Jx = Jx.numpy()
-    #np.save('last_Jx.npy',last_Jx) 
+    last_Jx = np.array(i[0] for i in Jx)
+    np.save('last_Jx.npy',last_Jx) 
