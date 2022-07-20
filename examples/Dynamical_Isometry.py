@@ -539,5 +539,5 @@ if __name__ == '__main__':
                     )
                 )
     for i in range(len(Jx)):
-        Jx[i] = Jx[i].detach().numpy()
+        Jx[i] = Jx[i].detach().cpu().numpy()
     np.savetxt('last_Jx.txt',Jx) 
