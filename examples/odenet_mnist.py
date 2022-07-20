@@ -446,7 +446,7 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         x, y = data_gen.__next__()
         #Jx = x
-        print('Jx:', Jx.shape)
+        #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
         #logits = model(x)
