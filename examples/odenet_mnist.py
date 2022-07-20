@@ -479,7 +479,7 @@ if __name__ == '__main__':
 
         #Jy = logits
         if len(Jx) > 0 and itr % batches_per_epoch == 0:
-            J = jacobian(Jx[-1], Jy[-1])
+            J = jacobian_temp(Jx[-1], Jy[-1])
             sv.append(svd(J, compute_uv=False))
             print('sv.len: ', len(sv))
 
