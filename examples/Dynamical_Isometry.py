@@ -485,12 +485,12 @@ if __name__ == '__main__':
         #Jy = logits
         if len(Jx) > 0 and itr % batches_per_epoch == 0:
             print('Jx.shape',Jx[-1].shape)
-            '''
+            
             #print('Jy.shape',Jy[-1].shape)
             J = jacobian(lastfunc,Jx[-1])
             sv.append(svd(J.detach().cpu().numpy(), compute_uv=False))
             print('sv.len: ', len(sv))
-            '''
+            
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
             feature_layers[0].nfe = 0
@@ -516,9 +516,9 @@ if __name__ == '__main__':
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
             '''
-            jaco = jacobian(x, logits)
-            sv.append(svd(jaco.numpy(), compute_uv=False))
-            logger.info('sv.len{:04d}'.format(len(sv)))
+            #jaco = jacobian(x, logits)
+            #sv.append(svd(jaco.numpy(), compute_uv=False))
+            #logger.info('sv.len{:04d}'.format(len(sv)))
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
