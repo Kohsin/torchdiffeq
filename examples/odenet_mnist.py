@@ -435,6 +435,8 @@ if __name__ == '__main__':
     end = time.time()
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
+    Jx = []
+    Jy = []
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
@@ -453,7 +455,13 @@ if __name__ == '__main__':
         logits = x
         for i in range(len(model)):
             logits = model[i](logits)
-            print('layar ',i,' :',logits.shape)
+            if itr % batches_per_epoch == 0 and itr % batches_per_epoch > 0:
+               if i == 6:
+                  Jx.append(logits)
+               if i == 7:
+                  Jy.append(logits)
+               print('len Jy Jx', len(Jy),'  ',len(Jx))
+            #print('layar ',i,' :',logits.shape)
             '''
             if i == 6:
                print("layer 6:",logits.shape)
@@ -489,11 +497,13 @@ if __name__ == '__main__':
         end = time.time()
 
         if itr % batches_per_epoch == 0:
+            '''
             for (name, module) in model.named_modules():
                 if name in 'odefunc.':
                     module.register_forward_hook(hook=hook)
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
+            '''
             # jaco = jacobian(x, logits)
             # sv.append(svd(jaco.numpy(), compute_uv=False))
             # logger.info('sv.len{:04d}'.format(len(sv)))
