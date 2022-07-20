@@ -445,21 +445,28 @@ if __name__ == '__main__':
         odecay = adjust_ortho_decay_rate(itr + 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
-        Jx = x
+        #Jx = x
         print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
-        logits = model(x)
+        #logits = model(x)
+        logits = x
+        for i in range(len(model)):
+            logits = model[i](logits)
+            if i == 6:
+               print("layer 6:",logits.shape)
+            if i == 7:
+               print("layer 7:",logits.shape)
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
         loss = criterion(logits, y)
         loss = loss + oloss
 
-        Jy = logits
-        J = jacobian_temp(Jx, Jy)
-        sv.append(svd(J, compute_uv=False))
-        print('sv.len: ', len(sv))
+        #Jy = logits
+        #J = jacobian_temp(Jx, Jy)
+        #sv.append(svd(J, compute_uv=False))
+        #print('sv.len: ', len(sv))
 
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
