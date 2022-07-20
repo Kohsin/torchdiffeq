@@ -485,7 +485,7 @@ if __name__ == '__main__':
             print('Jx.shape',Jx[-1].shape)
             print('Jy.shape',Jy[-1].shape)
             J = jacobian(lastfunc,Jx[-1])
-            sv.append(svd(J, compute_uv=False))
+            sv.append(svd(J.detach().cpu().numpy(), compute_uv=False))
             print('sv.len: ', len(sv))
 
         if is_odenet:
