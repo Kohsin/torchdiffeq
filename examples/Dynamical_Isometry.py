@@ -516,9 +516,9 @@ if __name__ == '__main__':
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
             '''
-            # jaco = jacobian(x, logits)
-            # sv.append(svd(jaco.numpy(), compute_uv=False))
-            # logger.info('sv.len{:04d}'.format(len(sv)))
+             jaco = jacobian(x, logits)
+             sv.append(svd(jaco.numpy(), compute_uv=False))
+             logger.info('sv.len{:04d}'.format(len(sv)))
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
@@ -538,5 +538,5 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
-    last_Jx = Jx.numpy()
-    np.save('last_Jx.npy',last_Jx) 
+    #last_Jx = Jx.numpy()
+    #np.save('last_Jx.npy',last_Jx) 
