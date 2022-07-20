@@ -455,11 +455,13 @@ if __name__ == '__main__':
         logits = x
         for i in range(len(model)):
             logits = model[i](logits)
-            print(itr % batches_per_epoch)
+            #print(itr % batches_per_epoch)
             if itr % batches_per_epoch == 0 and itr > 0:
                if i == 6:
+                  print('Jx append')
                   Jx.append(logits)
                if i == 7:
+                  print('Jy append')
                   Jy.append(logits)
                print('len Jy Jx', len(Jy),'  ',len(Jx))
             #print('layar ',i,' :',logits.shape)
