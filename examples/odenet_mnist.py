@@ -463,7 +463,7 @@ if __name__ == '__main__':
                if i == 7:
                   print('Jy append')
                   Jy.append(logits)
-               print('len Jy Jx', len(Jy),'  ',len(Jx))
+        print('len Jy Jx', len(Jy),'  ',len(Jx))
             #print('layar ',i,' :',logits.shape)
             '''
             if i == 6:
@@ -478,9 +478,10 @@ if __name__ == '__main__':
         loss = loss + oloss
 
         #Jy = logits
-        #J = jacobian_temp(Jx, Jy)
-        #sv.append(svd(J, compute_uv=False))
-        #print('sv.len: ', len(sv))
+        if len(Jx) > 0:
+            J = jacobian_temp(Jx[-1], Jy[-1])
+            sv.append(svd(J, compute_uv=False))
+            print('sv.len: ', len(sv))
 
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
