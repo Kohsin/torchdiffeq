@@ -465,12 +465,12 @@ if __name__ == '__main__':
                   Jy.append(logits)
         print('len Jy Jx', len(Jy),'  ',len(Jx))
             #print('layar ',i,' :',logits.shape)
-            '''
+        '''
             if i == 6:
                print("layer 6:",logits.shape)
             if i == 7:
                print("layer 7:",logits.shape)
-            '''
+        '''
         # loss = criterion(logits, y)
         oloss = l2_reg_ortho(model)
         oloss = odecay * oloss
