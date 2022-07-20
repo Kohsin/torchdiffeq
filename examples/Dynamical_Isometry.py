@@ -402,6 +402,7 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
+    lastfunc = nn.Linear(64, 10)
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
@@ -482,7 +483,7 @@ if __name__ == '__main__':
         if len(Jx) > 0 and itr % batches_per_epoch == 0:
             print('Jx.shape',Jx[-1].shape)
             print('Jy.shape',Jy[-1].shape)
-            J = jacobian_temp(Jx[-1], Jy[-1])
+            J = jacobian(lastfunc,Jx[-1])
             sv.append(svd(J, compute_uv=False))
             print('sv.len: ', len(sv))
 
