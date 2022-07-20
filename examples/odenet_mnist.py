@@ -57,9 +57,10 @@ def hook(module, fea_in, fea_out):
 
 
 def jacobian_temp(inputs, outputs):
-    inputs = Variable(inputs).to(device).requires_grad_()
+    #inputs = Variable(inputs).to(device).requires_grad_()
+    #allow_unused=True
     return torch.stack(
-        [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True, allow_unused=True)[0] for i in
+        [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
          range(outputs.size(1))], dim=-1)
 
 
