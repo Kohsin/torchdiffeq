@@ -460,7 +460,7 @@ if __name__ == '__main__':
             logits = model(x)
             if itr % batches_per_epoch == 0:
                 temp = logits.sum().backward()
-                jac = net.jacobian()
+                jac = model.jacobian()
                 Jaco.append(jac)
                 logger.info('Jaco append')
         #logits = x
