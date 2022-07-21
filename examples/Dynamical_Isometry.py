@@ -462,7 +462,7 @@ if __name__ == '__main__':
             Jac = []
             for o in temp.view(-1):
                 grad = []
-                o.backward(retain_graph=True)
+                o.backward(retain_graph=False)
                 for param in model.parameters():
                     grad.append(param.grad.reshape(-1))
                 Jac.append(torch.cat(grad))
