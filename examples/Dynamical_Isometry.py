@@ -17,7 +17,7 @@ from torch.nn.functional import normalize
 import torch.nn.functional as F
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
-from jacobian import extend, JacobianMode
+from Jacobian import extend, JacobianMode
 
 
 parser = argparse.ArgumentParser()
