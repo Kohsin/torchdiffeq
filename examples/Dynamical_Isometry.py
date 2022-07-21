@@ -460,7 +460,6 @@ if __name__ == '__main__':
         if itr % batches_per_epoch == 0:
             Jac = []
             for o in logits.view(-1):
-                model.zero_grad()
                 grad = []
                 o.backward(retain_graph=True)
                 for param in model.parameters():
