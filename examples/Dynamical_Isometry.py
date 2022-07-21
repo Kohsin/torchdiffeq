@@ -550,7 +550,7 @@ if __name__ == '__main__':
                         print("shape for in", features_in_hook[-1].shape)
             '''
             #jaco = jacobian(x, logits)
-            sv.append(svd(Jaco[-1].numpy(), compute_uv=False))
+            sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
             print('sv.len:',len(sv))
             with torch.no_grad():
                 '''
