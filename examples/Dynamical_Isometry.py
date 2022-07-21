@@ -405,7 +405,7 @@ if __name__ == '__main__':
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     lastfunc = ODEBlock(ODEfunc(64)).to(device)
-    
+    #extend(model,())
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
@@ -456,6 +456,7 @@ if __name__ == '__main__':
         #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
+        print('X.shape',x.shape)
         with JacobianMode(model):
             logits = model(x)
             if itr % batches_per_epoch == 0:
