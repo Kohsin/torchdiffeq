@@ -405,7 +405,7 @@ if __name__ == '__main__':
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     lastfunc = ODEBlock(ODEfunc(64)).to(device)
-    #extend(model,())
+    extend(model,(128, 1, 28, 28))
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
