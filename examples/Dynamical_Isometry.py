@@ -17,6 +17,8 @@ from torch.nn.functional import normalize
 import torch.nn.functional as F
 import torch.nn.parallel
 import torch.backends.cudnn as cudnn
+from jacobian import extend, JacobianMode
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default='odenet')
@@ -461,6 +463,8 @@ if __name__ == '__main__':
             #print(itr % batches_per_epoch)
             if itr % batches_per_epoch == 0:
                if i == 6:
+                  print(logit.shape)
+                  #extend(model[i],(128,))
                   print('Jx append')
                   Jx.append(logits)
                '''
@@ -538,6 +542,8 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )
+    '''            
     for i in range(len(Jx)):
         Jx[i] = Jx[i].detach().cpu().numpy()
     np.savez('Jx',Jx) 
+    '''
