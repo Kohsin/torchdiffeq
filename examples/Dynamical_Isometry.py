@@ -467,6 +467,7 @@ if __name__ == '__main__':
                     grad.append(param.grad.reshape(-1))
                 Jac.append(torch.cat(grad))
             Jac = torch.stack(Jac)
+            print('Jac.shape',Jac.shape)
             Jaco.append(Jac)
         '''
         with JacobianMode(model):
