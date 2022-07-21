@@ -19,6 +19,7 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 from Jacobian import extend, JacobianMode
 
+import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default='odenet')
@@ -571,9 +572,7 @@ if __name__ == '__main__':
                         itr // batches_per_epoch, batch_time_meter.val, batch_time_meter.avg, f_nfe_meter.avg,
                         b_nfe_meter.avg, train_acc, val_acc
                     )
-                )
-    '''            
-    for i in range(len(Jx)):
-        Jx[i] = Jx[i].detach().cpu().numpy()
-    np.savez('Jx',Jx) 
-    '''
+                )        
+    for i in range(len(Jaco)):
+        torch.save('t.csv',Jaco[i])
+    
