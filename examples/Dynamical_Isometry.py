@@ -457,6 +457,17 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
+        if itr % batches_per_epoch == 0:
+            Jac = []
+            for o in logits.view(-1):
+                model.zero_grad()
+                grad = []
+                o.backward(retain_graph=True)
+                for param in model.parameters():
+                    grad.append(param.grad.reshape(-1))
+                Jac.append(torch.cat(grad))
+            Jac = torch.stack(Jac)
+            Jaco.append(Jac)
         '''
         with JacobianMode(model):
             logits = model(x)
@@ -540,15 +551,6 @@ if __name__ == '__main__':
             #jaco = jacobian(x, logits)
             #sv.append(svd(jaco.numpy(), compute_uv=False))
             #logger.info('sv.len{:04d}'.format(len(sv)))
-            Jac = []
-            for o in logits.view(-1):
-                grad = []
-                o.backward(retain_graph=True)
-                for param in model.parameters():
-                    grad.append(param.grad.reshape(-1))
-                Jac.append(torch.cat(grad))
-            Jac = torch.stack(Jac)
-            Jaco.append(Jac)
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
