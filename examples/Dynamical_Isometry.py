@@ -480,13 +480,12 @@ if __name__ == '__main__':
                   print('jac append')
                   Jx.append(jac)
                   print('Jac.len:',len(Jx))
-                  
-        '''
-               '''
+                          
                if i == 12:
                   print('Jy append')
                   Jy.append(logits)
-               '''
+        '''
+
         #print('len Jy Jx', len(Jy),'  ',len(Jx))
             #print('layar ',i,' :',logits.shape)
         '''
