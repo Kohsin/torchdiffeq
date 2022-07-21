@@ -441,7 +441,7 @@ if __name__ == '__main__':
     ortho_decay = args.ortho_decay
     weight_decay = args.weight_decay
     Jx = []
-    Jy = []
+    Jaco = []
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
@@ -456,8 +456,16 @@ if __name__ == '__main__':
         #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
-        #logits = model(x)
-        logits = x
+        with JacobianMode(model):
+            logits = model(x)
+            if itr % batches_per_epoch == 0:
+                temp = logits.sum().backward()
+                jac = net.jacobian()
+                Jaco.append(jac)
+                logger.info('Jaco append')
+        #logits = x
+        
+        '''
         for i in range(len(model)):
             logits = model[i](logits)
             #print(itr % batches_per_epoch)
@@ -472,6 +480,8 @@ if __name__ == '__main__':
                   print('jac append')
                   Jx.append(jac)
                   print('Jac.len:',len(Jx))
+                  
+        '''
                '''
                if i == 12:
                   print('Jy append')
