@@ -457,9 +457,10 @@ if __name__ == '__main__':
         x = x.to(device)
         y = y.to(device)
         logits = model(x)
+        temp = model(x)
         if itr % batches_per_epoch == 0:
             Jac = []
-            for o in logits.view(-1):
+            for o in temp.view(-1):
                 grad = []
                 o.backward(retain_graph=True)
                 for param in model.parameters():
