@@ -465,8 +465,13 @@ if __name__ == '__main__':
                if i == 6:
                   print(logit.shape)
                   #extend(model[i],(128,))
-                  print('Jx append')
-                  Jx.append(logits)
+                  with JacobianMode(model[i]):
+                      out = model[i](x)
+                      out.sum().backward()
+                      jac = net.jacobian()
+                  print('jac append')
+                  Jx.append(jac)
+                  print('Jac.len:',len(Jx))
                '''
                if i == 12:
                   print('Jy append')
