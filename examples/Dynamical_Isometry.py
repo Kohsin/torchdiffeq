@@ -464,8 +464,8 @@ if __name__ == '__main__':
                 o.backward(retain_graph=True)
                 for param in model.parameters():
                     grad.append(param.grad.reshape(-1))
-                jac_loop.append(torch.cat(grad))
-            Jaco = torch.stack(jac_loop)
+                Jaco.append(torch.cat(grad))
+            Jaco = torch.stack(Jaco)
         '''
         with JacobianMode(model):
             logits = model(x)
