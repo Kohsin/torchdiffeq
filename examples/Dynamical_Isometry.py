@@ -405,7 +405,7 @@ if __name__ == '__main__':
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     lastfunc = ODEBlock(ODEfunc(64)).to(device)
-    extend(model,(1, 28, 28))
+    #extend(model,(1, 28, 28))
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
@@ -456,7 +456,17 @@ if __name__ == '__main__':
         #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
-        print('X.shape',x.shape)
+        logits = model(x)
+        if itr % batches_per_epoch == 0:
+            for o in logits.view(-1):
+                model.zero_grad()
+                grad = []
+                o.backward(retain_graph=True)
+                for param in model.parameters():
+                    grad.append(param.grad.reshape(-1))
+                jac_loop.append(torch.cat(grad))
+            Jaco = torch.stack(jac_loop)
+        '''
         with JacobianMode(model):
             logits = model(x)
             if itr % batches_per_epoch == 0:
@@ -465,6 +475,7 @@ if __name__ == '__main__':
                 Jaco.append(jac)
                 logger.info('Jaco append')
         #logits = x
+        '''
         
         '''
         for i in range(len(model)):
