@@ -552,6 +552,7 @@ if __name__ == '__main__':
             #jaco = jacobian(x, logits)
             sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
             print('sv.len:',len(sv))
+            print('sv.shape:',sv[-1].shape)
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
