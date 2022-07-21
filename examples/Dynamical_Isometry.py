@@ -463,7 +463,7 @@ if __name__ == '__main__':
             #print(itr % batches_per_epoch)
             if itr % batches_per_epoch == 0:
                if i == 6:
-                  print(logit.shape)
+                  #print(logit.shape)
                   #extend(model[i],(128,))
                   with JacobianMode(model[i]):
                       out = model[i](x)
