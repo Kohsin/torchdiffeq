@@ -62,6 +62,8 @@ def hook(module, fea_in, fea_out):
 # jacobian with respect to input
 def jacobian_test(y, x, create_graph=False):
     jac = []
+    x.requires_grad
+    y.requires_grad
     flat_y = y.reshape(-1)
     if len(flat_y) == 1:
         (grad_x,) = torch.autograd.grad(
