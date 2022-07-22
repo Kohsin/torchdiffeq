@@ -413,14 +413,14 @@ if __name__ == '__main__':
     if args.downsampling_method == 'conv':
         downsampling_layers = [
             nn.Conv2d(1, 64, 3, 1),
-            '''
+            
             norm(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 4, 2, 1),
             norm(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 4, 2, 1),
-            '''
+            
         ]
     elif args.downsampling_method == 'res':
         downsampling_layers = [
