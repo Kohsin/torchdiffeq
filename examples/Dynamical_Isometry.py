@@ -583,7 +583,8 @@ if __name__ == '__main__':
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
             '''
-            Jaco.append(jacobian_test(logits, x))
+            #Jaco.append()
+            #Jaco.append(jacobian_test(logits, x))
             #jaco = jacobian(x, logits)
             sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
             print('sv.len:',len(sv))
@@ -607,6 +608,6 @@ if __name__ == '__main__':
                         b_nfe_meter.avg, train_acc, val_acc
                     )
                 )        
-    for i in range(len(Jaco)):
-        torch.savetxt('test.txt',Jaco[i])
+    
+    torch.savetxt('test.txt',sv[0])
     
