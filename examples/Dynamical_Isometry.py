@@ -432,7 +432,7 @@ if __name__ == '__main__':
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     lastfunc = ODEBlock(ODEfunc(64)).to(device)
-    #extend(model,(1, 28, 28))
+    
     parm = {}
     for name, parameters in model.named_parameters():
         if name == '7.odefunc.conv1._layer.weight':
@@ -472,6 +472,7 @@ if __name__ == '__main__':
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
+    extend(model,(1, 28, 28))
     for itr in range(args.nepochs * batches_per_epoch):
 
         for param_group in optimizer.param_groups:
@@ -483,17 +484,20 @@ if __name__ == '__main__':
         #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
-        logits = model(x)
-        '''
-        with JacobianMode(model):
+        
+        if itr % batches_per_epoch == 0:
+          
+            with JacobianMode(model):
+                logits = model(x)
+                if itr % batches_per_epoch == 0:
+                    temp = logits.sum().backward()
+                    jac = model.jacobian()
+                    Jaco.append(jac)
+                    logger.info('Jaco append')
+        else:
             logits = model(x)
-            if itr % batches_per_epoch == 0:
-                temp = logits.sum().backward()
-                jac = model.jacobian()
-                Jaco.append(jac)
-                logger.info('Jaco append')
         #logits = x
-        '''
+        
         
         '''
         for i in range(len(model)):
