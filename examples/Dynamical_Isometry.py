@@ -138,7 +138,7 @@ def l2_reg_ortho(mdl):
     l2_reg = None
     # for W in mdl.nparameters():
     for name, W in mdl.named_parameters():
-        if name[0] == '7' and name[-1] == 't':
+        if name[0] == '1' and name[-1] == 't':
             if W.ndimension() < 2:
                 continue
             else:
@@ -413,12 +413,14 @@ if __name__ == '__main__':
     if args.downsampling_method == 'conv':
         downsampling_layers = [
             nn.Conv2d(1, 64, 3, 1),
+            '''
             norm(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 4, 2, 1),
             norm(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 4, 2, 1),
+            '''
         ]
     elif args.downsampling_method == 'res':
         downsampling_layers = [
@@ -433,11 +435,6 @@ if __name__ == '__main__':
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
     lastfunc = ODEBlock(ODEfunc(64)).to(device)
     
-    parm = {}
-    for name, parameters in model.named_parameters():
-        if name == '7.odefunc.conv1._layer.weight':
-            print(name, ':', parameters.size())
-
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
     logger.info('Number of parameters: {}'.format(count_parameters(model)))
