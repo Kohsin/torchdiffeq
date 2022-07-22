@@ -76,7 +76,7 @@ def jacobian_test(y, x, create_graph=False):
         
         return grad_x.reshape(x.numel())
 
-    grad_y = torch.zeros_like(flat_y)
+    grad_y = torch.zeros_like(flat_y, requires_grad=True)
 
     for i in range(len(flat_y)):
         grad_y[i] = 1.0
