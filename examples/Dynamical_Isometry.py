@@ -69,6 +69,7 @@ def jacobian_test(y, x, create_graph=False):
         (grad_x,) = torch.autograd.grad(
             y, x, None, retain_graph=True, create_graph=create_graph, allow_unused=True
         )
+        grad_x = np.array(grad_x)
         return grad_x.reshape(x.numel())
 
     grad_y = torch.zeros_like(flat_y)
