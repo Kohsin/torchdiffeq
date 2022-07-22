@@ -26,7 +26,7 @@ parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default
 parser.add_argument('--tol', type=float, default=1e-3)
 parser.add_argument('--adjoint', type=eval, default=False, choices=[True, False])
 parser.add_argument('--downsampling-method', type=str, default='conv', choices=['conv', 'res'])
-parser.add_argument('--nepochs', type=int, default=5)
+parser.add_argument('--nepochs', type=int, default=1)
 parser.add_argument('--data_aug', type=eval, default=True, choices=[True, False])
 parser.add_argument('--lr', type=float, default=0.1)
 parser.add_argument('--batch_size', type=int, default=128)
@@ -59,13 +59,27 @@ def hook(module, fea_in, fea_out):
     return None
 
 
-def jacobian_temp(inputs, outputs):
-    #inputs = Variable(inputs).to(device).requires_grad_()
-    #allow_unused=True
-    return torch.stack(
-        [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
-         range(outputs.size(1))], dim=-1)
+# jacobian with respect to input
+def jacobian_test(y, x, create_graph=False):
+    jac = []
+    flat_y = y.reshape(-1)
+    if len(flat_y) == 1:
+        (grad_x,) = torch.autograd.grad(
+            y, x, None, retain_graph=True, create_graph=create_graph
+        )
+        return grad_x.reshape(x.numel())
 
+    grad_y = torch.zeros_like(flat_y)
+
+    for i in range(len(flat_y)):
+        grad_y[i] = 1.0
+        (grad_x,) = torch.autograd.grad(
+            flat_y, x, grad_y, retain_graph=True, create_graph=create_graph
+        )
+        jac.append(grad_x.reshape(x.shape))
+        grad_y[i] = 0.0
+    return torch.stack(jac).reshape(y.shape + (x.numel(),))
+  
 
 def adjust_weight_decay_rate(optimizer, epoch):
     w_d = args.weight_decay
@@ -519,7 +533,8 @@ if __name__ == '__main__':
 
         loss.backward()
         if itr % batches_per_epoch == 0:
-            Jac = []
+            #Jac = []
+            '''
             for o in logits.view(-1):
                 #model.zero_grad()
                 grad = []
@@ -528,8 +543,10 @@ if __name__ == '__main__':
                     grad.append(param.grad.reshape(-1))
                 Jac.append(torch.cat(grad))
             Jac = torch.stack(Jac)
-            print('Jac.shape',Jac.shape)
-            Jaco.append(Jac)        
+            '''
+            #print('Jac.shape',Jac.shape)
+            #Jaco.append(Jac)  
+            
         optimizer.step()
 
         if is_odenet:
@@ -550,6 +567,7 @@ if __name__ == '__main__':
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
             '''
+            Jaco[-1] = jacobian_test(logits, x)
             #jaco = jacobian(x, logits)
             sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
             print('sv.len:',len(sv))
@@ -574,5 +592,5 @@ if __name__ == '__main__':
                     )
                 )        
     for i in range(len(Jaco)):
-        torch.save('t.csv',Jaco[i])
+        torch.savetxt('test.txt',Jaco[i])
     
