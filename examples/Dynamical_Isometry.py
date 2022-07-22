@@ -546,22 +546,7 @@ if __name__ == '__main__':
             feature_layers[0].nfe = 0
 
         loss.backward()
-        if itr % batches_per_epoch == 0:
-            #Jac = []
-            
-            for o in logits.view(-1):
-                #model.zero_grad()
-                grad = []
-                o.backward(retain_graph=True)
-                for param in model.parameters():
-                    grad.append(param.grad.reshape(-1))
-                Jac.append(torch.cat(grad))
-            Jac = torch.stack(Jac)
-            Jaco.append(Jac)  
-            sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
-            print('sv.len:',len(sv))
-            print('sv.shape:',sv[-1].shape)            
-            #print('Jac.shape',Jac.shape)
+
            
             
         optimizer.step()
@@ -575,7 +560,24 @@ if __name__ == '__main__':
             f_nfe_meter.update(nfe_forward)
             b_nfe_meter.update(nfe_backward)
         end = time.time()
-
+        if itr % batches_per_epoch == 0:
+            #Jac = []
+            '''
+            for o in logits.view(-1):
+                #model.zero_grad()
+                grad = []
+                o.backward(retain_graph=True)
+                for param in model.parameters():
+                    grad.append(param.grad.reshape(-1))
+                Jac.append(torch.cat(grad))
+            Jac = torch.stack(Jac)
+            '''
+            Jac = jacobian(model,x)
+            Jaco.append(Jac)  
+            sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
+            print('sv.len:',len(sv))
+            print('sv.shape:',sv[-1].shape)            
+            #print('Jac.shape',Jac.shape)        
         if itr % batches_per_epoch == 0:
             '''
             for (name, module) in model.named_modules():
