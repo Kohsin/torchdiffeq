@@ -68,7 +68,7 @@ def jacobian_test(y, x, create_graph=False):
     print('flat_y',flat_y.shape)
     if len(flat_y) == 1:
         (grad_x,) = torch.autograd.grad(
-            y, x, None, retain_graph=True, create_graph=create_graph, allow_unused=True
+            y, x, None, retain_graph=True, create_graph=create_graph
         )
         
         grad_x = np.array(grad_x)
@@ -81,7 +81,7 @@ def jacobian_test(y, x, create_graph=False):
     for i in range(len(flat_y)):
         grad_y[i] = 1.0
         (grad_x,) = torch.autograd.grad(
-            flat_y, x, grad_y, retain_graph=True, create_graph=create_graph, allow_unused=True
+            flat_y, x, grad_y, retain_graph=True, create_graph=create_graph
         )
         grad_x = np.array(grad_x)
         print('grad_x',grad_x.shape)
