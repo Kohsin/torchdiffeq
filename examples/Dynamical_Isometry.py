@@ -567,7 +567,7 @@ if __name__ == '__main__':
                     if len(features_in_hook) > 0:
                         print("shape for in", features_in_hook[-1].shape)
             '''
-            Jaco[-1] = jacobian_test(logits, x)
+            Jaco.append(jacobian_test(logits, x))
             #jaco = jacobian(x, logits)
             sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
             print('sv.len:',len(sv))
