@@ -26,7 +26,7 @@ parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default
 parser.add_argument('--tol', type=float, default=1e-3)
 parser.add_argument('--adjoint', type=eval, default=False, choices=[True, False])
 parser.add_argument('--downsampling-method', type=str, default='conv', choices=['conv', 'res'])
-parser.add_argument('--nepochs', type=int, default=1)
+parser.add_argument('--nepochs', type=int, default=2)
 parser.add_argument('--data_aug', type=eval, default=True, choices=[True, False])
 parser.add_argument('--lr', type=float, default=0.1)
 parser.add_argument('--batch_size', type=int, default=128)
@@ -433,7 +433,7 @@ if __name__ == '__main__':
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
 
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers).to(device)
-    lastfunc = ODEBlock(ODEfunc(64)).to(device)
+    #lastfunc = ODEBlock(ODEfunc(64)).to(device)
     
         # parm[name]=parameters.detach().numpy()
     logger.info(model)
@@ -469,7 +469,7 @@ if __name__ == '__main__':
     sv = []
     # net = ODEBlock()
     print("batches_per_epoch: ", batches_per_epoch)
-    extend(model,(1, 28, 28))
+    #extend(model,(1, 28, 28))
     for itr in range(args.nepochs * batches_per_epoch):
 
         for param_group in optimizer.param_groups:
@@ -481,7 +481,7 @@ if __name__ == '__main__':
         #print('Jx:', Jx.shape)
         x = x.to(device)
         y = y.to(device)
-        
+        '''
         if itr % batches_per_epoch == 0:
           
             with JacobianMode(model):
@@ -492,7 +492,8 @@ if __name__ == '__main__':
                     Jaco.append(jac)
                     logger.info('Jaco append')
         else:
-            logits = model(x)
+        '''
+        logits = model(x)
         #logits = x
         
         
@@ -547,18 +548,21 @@ if __name__ == '__main__':
         loss.backward()
         if itr % batches_per_epoch == 0:
             #Jac = []
-            '''
+            
             for o in logits.view(-1):
                 #model.zero_grad()
                 grad = []
-                #o.backward(retain_graph=True)
+                o.backward(retain_graph=True)
                 for param in model.parameters():
                     grad.append(param.grad.reshape(-1))
                 Jac.append(torch.cat(grad))
             Jac = torch.stack(Jac)
-            '''
+            Jaco.append(Jac)  
+            sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
+            print('sv.len:',len(sv))
+            print('sv.shape:',sv[-1].shape)            
             #print('Jac.shape',Jac.shape)
-            #Jaco.append(Jac)  
+           
             
         optimizer.step()
 
@@ -583,9 +587,7 @@ if __name__ == '__main__':
             #Jaco.append()
             #Jaco.append(jacobian_test(logits, x))
             #jaco = jacobian(x, logits)
-            sv.append(svd(Jaco[-1].cpu().numpy(), compute_uv=False))
-            print('sv.len:',len(sv))
-            print('sv.shape:',sv[-1].shape)
+            
             with torch.no_grad():
                 '''
                 for name, param in model.named_parameters():
