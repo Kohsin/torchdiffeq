@@ -57,8 +57,8 @@ def hook(module, fea_in, fea_out):
 
 
 def jacobian_temp(inputs, outputs):
-    #inputs = Variable(inputs).to(device).requires_grad_()
-    #allow_unused=True
+    # inputs = Variable(inputs).to(device).requires_grad_()
+    # allow_unused=True
     return torch.stack(
         [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
          range(outputs.size(1))], dim=-1)
@@ -276,7 +276,8 @@ def get_mnist_loaders(data_aug=False, batch_size=128, test_batch_size=1000, perc
     ])
 
     train_loader = DataLoader(
-        datasets.CIFAR10(root='.data/cifar', train=True, download=True, transform=transform_train), batch_size=batch_size,
+        datasets.CIFAR10(root='.data/cifar', train=True, download=True, transform=transform_train),
+        batch_size=batch_size,
         shuffle=True, num_workers=2, drop_last=True
     )
 
@@ -383,7 +384,7 @@ if __name__ == '__main__':
 
     if args.downsampling_method == 'conv':
         downsampling_layers = [
-            nn.Conv2d(128, 64, 3, 1),
+            nn.Conv2d(3, 64, 3, 1),
             norm(64),
             nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, 4, 2, 1),
@@ -393,7 +394,7 @@ if __name__ == '__main__':
         ]
     elif args.downsampling_method == 'res':
         downsampling_layers = [
-            nn.Conv2d(128, 64, 3, 1),
+            nn.Conv2d(3, 64, 3, 1),
             ResBlock(64, 64, stride=2, downsample=conv1x1(64, 64, 2)),
             ResBlock(64, 64, stride=2, downsample=conv1x1(64, 64, 2)),
         ]
@@ -449,11 +450,10 @@ if __name__ == '__main__':
         y = y.to(device)
         logits = model(x)
         # loss = criterion(logits, y)
-        #oloss = l2_reg_ortho(model)
-        #oloss = odecay * oloss
+        # oloss = l2_reg_ortho(model)
+        # oloss = odecay * oloss
         loss = criterion(logits, y)
-        #loss = loss + oloss
-        
+        # loss = loss + oloss
 
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
@@ -473,9 +473,9 @@ if __name__ == '__main__':
         end = time.time()
 
         if itr % batches_per_epoch == 0:
-          
+
             with torch.no_grad():
- 
+
                 train_acc = accuracy(model, train_eval_loader)
                 val_acc = accuracy(model, test_loader)
                 if val_acc > best_acc:
