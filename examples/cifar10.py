@@ -19,7 +19,7 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default='resnet')
+parser.add_argument('--network', type=str, choices=['resnet', 'odenet'], default='odenet')
 parser.add_argument('--tol', type=float, default=1e-3)
 parser.add_argument('--adjoint', type=eval, default=False, choices=[True, False])
 parser.add_argument('--downsampling-method', type=str, default='conv', choices=['conv', 'res'])
@@ -46,22 +46,6 @@ if args.adjoint:
 else:
     from torchdiffeq import odeint
 
-features_in_hook = []
-features_out_hook = []
-
-
-def hook(module, fea_in, fea_out):
-    features_in_hook.append(fea_in)
-    features_out_hook.append(fea_out)
-    return None
-
-
-def jacobian_temp(inputs, outputs):
-    # inputs = Variable(inputs).to(device).requires_grad_()
-    # allow_unused=True
-    return torch.stack(
-        [grad([outputs[:, i].sum()], [inputs], retain_graph=True, create_graph=True)[0] for i in
-         range(outputs.size(1))], dim=-1)
 
 
 def adjust_weight_decay_rate(optimizer, epoch):
