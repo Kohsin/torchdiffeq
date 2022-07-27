@@ -47,6 +47,7 @@ else:
     from torchdiffeq import odeint
 
 
+    
 
 def adjust_weight_decay_rate(optimizer, epoch):
     w_d = args.weight_decay
@@ -425,7 +426,7 @@ if __name__ == '__main__':
 
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr_fn(itr)
-        odecay = adjust_ortho_decay_rate(itr + 1)
+        odecay = adjust_ortho_decay_rate(itr // batches_per_epoch+ 1)
         optimizer.zero_grad()
         x, y = data_gen.__next__()
         x = x.to(device)
