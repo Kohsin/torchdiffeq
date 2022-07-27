@@ -17,6 +17,12 @@ parser.add_argument('--test_freq', type=int, default=20)
 parser.add_argument('--viz', action='store_true')
 parser.add_argument('--gpu', type=int, default=0)
 parser.add_argument('--adjoint', action='store_true')
+
+parser.add_argument('--weight-decay', '--wd', default=5e-4, type=float,
+                    help='weight decay (default: 5e-4)')
+parser.add_argument('--ortho-decay', '--od', default=1e-2, type=float,
+                    help = 'ortho weight decay')
+
 args = parser.parse_args()
 
 if args.adjoint:
@@ -30,6 +36,66 @@ true_y0 = torch.tensor([[2., 0.]]).to(device)
 t = torch.linspace(0., 25., args.data_size).to(device)
 true_A = torch.tensor([[-0.1, 2.0], [-2.0, -0.1]]).to(device)
 
+
+def l2_reg_ortho(mdl):
+        l2_reg = None
+        for W in mdl.parameters():
+                if W.ndimension() < 2:
+                        continue
+                else:
+                        cols = W[0].numel()
+                        rows = W.shape[0]
+                        w1 = W.view(-1,cols)
+                        wt = torch.transpose(w1,0,1)
+                        if (rows > cols):
+                                m  = torch.matmul(wt,w1)
+                                ident = Variable(torch.eye(cols,cols),requires_grad=True)
+                        else:
+                                m = torch.matmul(w1,wt)
+                                ident = Variable(torch.eye(rows,rows), requires_grad=True)
+
+                        ident = ident.cuda()
+                        w_tmp = (m - ident)
+                        b_k = Variable(torch.rand(w_tmp.shape[1],1))
+                        b_k = b_k.cuda()
+
+                        v1 = torch.matmul(w_tmp, b_k)
+                        norm1 = torch.norm(v1,2)
+                        v2 = torch.div(v1,norm1)
+                        v3 = torch.matmul(w_tmp,v2)
+
+                        if l2_reg is None:
+                                l2_reg = (torch.norm(v3,2))**2
+                        else:
+                                l2_reg = l2_reg + (torch.norm(v3,2))**2
+        return l2_reg
+
+    
+def adjust_weight_decay_rate(optimizer, epoch):
+    w_d = args.weight_decay
+
+    if epoch > 20:
+        w_d = 5e-4
+    elif epoch > 10:
+        w_d = 1e-6
+
+    for param_group in optimizer.param_groups:
+        param_group['weight_decay'] = w_d
+
+        
+def adjust_ortho_decay_rate(epoch):
+    o_d = args.ortho_decay
+
+    if epoch > 120:
+       o_d = 0.0
+    elif epoch > 70:
+       o_d = 1e-6 * o_d
+    elif epoch > 50:
+       o_d = 1e-4 * o_d
+    elif epoch > 20:
+       o_d = 1e-3 * o_d
+    
+    
 
 class Lambda(nn.Module):
 
@@ -161,10 +227,14 @@ if __name__ == '__main__':
     loss_meter = RunningAverageMeter(0.97)
 
     for itr in range(1, args.niters + 1):
+        odecay = adjust_ortho_decay_rate(itr // args.test_freq+1)
         optimizer.zero_grad()
         batch_y0, batch_t, batch_y = get_batch()
         pred_y = odeint(func, batch_y0, batch_t).to(device)
+        oloss = l2_reg_ortho(func)
+        oloss =  odecay * oloss
         loss = torch.mean(torch.abs(pred_y - batch_y))
+        loss = loss + oloss
         loss.backward()
         optimizer.step()
 
