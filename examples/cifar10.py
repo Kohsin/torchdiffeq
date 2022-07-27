@@ -64,10 +64,12 @@ def adjust_weight_decay_rate(optimizer, epoch):
 def adjust_ortho_decay_rate(epoch):
     o_d = args.ortho_decay
 
-    if epoch > 120:
+    if epoch > 160:
         o_d = 0.0
-    elif epoch > 70:
+    elif epoch > 120:
         o_d = 1e-6 * o_d
+    elif epoch > 70:
+        o_d = 2e-6 * o_d
     elif epoch > 50:
         o_d = 1e-4 * o_d
     elif epoch > 20:
