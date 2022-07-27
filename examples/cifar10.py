@@ -92,7 +92,7 @@ def norm(dim):
 
 def l2_reg_ortho(mdl):
     l2_reg = None
-    for W in mdl.nparameters():
+    for W in mdl.parameters():
             if W.ndimension() < 2:
                 continue
             else:
