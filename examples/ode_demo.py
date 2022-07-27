@@ -232,10 +232,10 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         batch_y0, batch_t, batch_y = get_batch()
         pred_y = odeint(func, batch_y0, batch_t).to(device)
-        oloss = l2_reg_ortho(func)
-        oloss =  odecay * oloss
+        #oloss = l2_reg_ortho(func)
+        #oloss =  odecay * oloss
         loss = torch.mean(torch.abs(pred_y - batch_y))
-        loss = loss + oloss
+        #loss = loss + oloss
         loss.backward()
         optimizer.step()
 
