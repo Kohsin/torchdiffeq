@@ -225,7 +225,8 @@ if __name__ == '__main__':
     time_meter = RunningAverageMeter(0.97)
     
     loss_meter = RunningAverageMeter(0.97)
-
+    ortho_decay = args.ortho_decay
+    weight_decay = args.weight_decay
     for itr in range(1, args.niters + 1):
         odecay = adjust_ortho_decay_rate(itr // args.test_freq+1)
         optimizer.zero_grad()
