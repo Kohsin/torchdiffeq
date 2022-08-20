@@ -45,7 +45,7 @@ parser.add_argument('--nesterov', default=True, type=bool, help='nesterov moment
 parser.add_argument('--data_dir', type=str, default='./data/cifar')
 parser.add_argument('--norm', type=str, default='Linf')
 parser.add_argument('--epsilon', type=float, default=1. / 255.)
-parser.add_argument('--model', type=str, default='./experiment1/ONOdes-Cifar10.pkl')
+parser.add_argument('--model', type=str, default='./experiment1/ONOdes-Cifar10.pth')
 parser.add_argument('--n_ex', type=int, default=1000)
 parser.add_argument('--individual', action='store_true')
 parser.add_argument('--save_dir', type=str, default='./results')
@@ -214,7 +214,7 @@ if __name__ == '__main__':
     feature_layers = [ODEBlock(ODEfunc(64))]
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers)
-    model= torch.load('./ODE-CIFAR.pkl')
+    model= torch.load('./ONOdes-Cifar10.pth')
     
     model.cuda()
     model.eval()
