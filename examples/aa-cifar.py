@@ -450,10 +450,10 @@ if __name__ == '__main__':
         y = y.to(device)
         logits = model(x)
         loss = criterion(logits, y)
-        #oloss = l2_reg_ortho(model)
-        #oloss = odecay * oloss
+        oloss = l2_reg_ortho(model)
+        oloss = odecay * oloss
         #loss = criterion(logits, y)
-        #loss = loss + oloss
+        loss = loss + oloss
 
         if is_odenet:
             nfe_forward = feature_layers[0].nfe
