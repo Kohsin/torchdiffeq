@@ -495,7 +495,7 @@ if __name__ == '__main__':
                     transform_list = [transforms.ToTensor()]
                     transform_chain = transforms.Compose(transform_list)
                     item = datasets.CIFAR10(root=args.data_dir, train=False, transform=transform_chain, download=True)
-                    test_loader = data.DataLoader(item, batch_size=1000, shuffle=False, num_workers=0)
+                    test_loader2 = data.DataLoader(item, batch_size=1000, shuffle=False, num_workers=0)
 
 
                     if not os.path.exists(args.save_dir):
@@ -506,9 +506,9 @@ if __name__ == '__main__':
                     adversary = AutoAttack(model, norm=args.norm, eps=args.epsilon, log_path=args.log_path,
                                            version=args.version)
 
-                    l = [x for (x, y) in test_loader]
+                    l = [x for (x, y) in test_loader2]
                     x_test = torch.cat(l, 0)
-                    l = [y for (x, y) in test_loader]
+                    l = [y for (x, y) in test_loader2]
                     y_test = torch.cat(l, 0)
 
                     if args.version == 'custom':
