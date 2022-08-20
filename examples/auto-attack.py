@@ -214,8 +214,8 @@ if __name__ == '__main__':
     feature_layers = [ODEBlock(ODEfunc(64))]
     fc_layers = [norm(64), nn.ReLU(inplace=True), nn.AdaptiveAvgPool2d((1, 1)), Flatten(), nn.Linear(64, 10)]
     model = nn.Sequential(*downsampling_layers, *feature_layers, *fc_layers)
-    model = torch.load('./Odes-Cifar10.pkl')
-    
+    model_dict = torch.load('./ONOdes-Cifar10.pkl')
+    model.load_state_dict(model_dict)
     model.cuda()
     model.eval()
 
