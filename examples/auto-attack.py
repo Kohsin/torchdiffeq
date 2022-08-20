@@ -49,7 +49,7 @@ parser.add_argument('--model', type=str, default='./experiment1/ONOdes-Cifar10.p
 parser.add_argument('--n_ex', type=int, default=1000)
 parser.add_argument('--individual', action='store_true')
 parser.add_argument('--save_dir', type=str, default='./results')
-#parser.add_argument('--batch_size', type=int, default=500)
+parser.add_argument('--batch_size2', type=int, default=500)
 parser.add_argument('--log_path', type=str, default='./log_file.txt')
 parser.add_argument('--version', type=str, default='standard')
 
@@ -245,12 +245,12 @@ if __name__ == '__main__':
     with torch.no_grad():
         if not args.individual:
             adv_complete = adversary.run_standard_evaluation(x_test[:args.n_ex], y_test[:args.n_ex],
-                                                             bs=args.batch_size)
+                                                             bs=args.batch_size2)
 
         else:
             # individual version, each attack is run on all test points
             adv_complete = adversary.run_standard_evaluation_individual(x_test[:args.n_ex],
-                                                                        y_test[:args.n_ex], bs=args.batch_size)
+                                                                        y_test[:args.n_ex], bs=args.batch_size2)
 
             torch.save(adv_complete, '{}/{}_{}_individual_1_{}_eps_{:.5f}_plus_{}_cheap_{}.pth'.format(
                 args.save_dir, 'aa', args.version, args.n_ex, args.epsilon))
