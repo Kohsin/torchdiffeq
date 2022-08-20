@@ -44,7 +44,7 @@ parser.add_argument('--nesterov', default=True, type=bool, help='nesterov moment
 
 parser.add_argument('--data_dir', type=str, default='./data/cifar')
 parser.add_argument('--norm', type=str, default='Linf')
-parser.add_argument('--epsilon', type=float, default=5. / 255.)
+parser.add_argument('--epsilon', type=float, default=1. / 255.)
 parser.add_argument('--model', type=str, default='./experiment1/ONOdes-Cifar10.pkl')
 parser.add_argument('--n_ex', type=int, default=1000)
 parser.add_argument('--individual', action='store_true')
